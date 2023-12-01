@@ -1,6 +1,6 @@
 /*******************************************************************************************
 *
-*   raylib 9years gamejam template
+*   raylib 10 years gamejam template
 *
 *   Template originally created with raylib 4.5-dev, last time updated with raylib 4.5-dev
 *
@@ -11,7 +11,16 @@
 *
 ********************************************************************************************/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "raylib.h"
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #if defined(PLATFORM_WEB)
     #define CUSTOM_MODAL_DIALOGS            // Force custom modal dialogs usage
@@ -21,6 +30,10 @@
 #include <stdio.h>                          // Required for: printf()
 #include <stdlib.h>                         // Required for: 
 #include <string.h>                         // Required for: 
+
+//----------------------------------------------------------------------------------
+#include "AudioManager.h"
+#include "GameManager.h"
 
 //----------------------------------------------------------------------------------
 // Defines and Macros
@@ -75,9 +88,14 @@ int main(void)
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "raylib 9yr gamejam");
+    InitWindow(screenWidth, screenHeight, "raylib 10yr gamejam");
     
     // TODO: Load resources / Initialize variables at this point
+    AudioManager* pAudioManager = AudioManager::GetInstance();
+    pAudioManager->Init();
+
+    GameManager* pGameManager = GameManager::GetInstance();
+    pGameManager->Init(screenWidth, screenHeight);
     
     // Render texture to draw full screen, enables screen scaling
     // NOTE: If screen is scaled, mouse input should be scaled proportionally
@@ -88,6 +106,8 @@ int main(void)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
     SetTargetFPS(60);     // Set our game frames-per-second
+
+    
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -100,6 +120,9 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     //UnloadRenderTexture(target);
+
+    AudioManager::Destroy();
+    GameManager::Destroy();
     
     // TODO: Unload all loaded resources at this point
 
@@ -115,6 +138,13 @@ int main(void)
 // Update and draw frame
 void UpdateDrawFrame(void)
 {
+    const float fDeltaTime = 1.0f / 60.0f;
+
+    GameManager* pGameManager = GameManager::GetInstance();
+
+    pGameManager->Update(fDeltaTime);
+    pGameManager->Render();
+
     // Update
     //----------------------------------------------------------------------------------
     // Screen scale logic (x2)
@@ -147,17 +177,17 @@ void UpdateDrawFrame(void)
     //    
     //EndTextureMode();
     
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-        
-        // Draw render texture to screen scaled as required
-        //DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Rectangle){ 0, 0, (float)target.texture.width*screenScale, (float)target.texture.height*screenScale }, (Vector2){ 0, 0 }, 0.0f, WHITE);
+    //BeginDrawing();
+    //    ClearBackground(RAYWHITE);
+    //    
+    //    // Draw render texture to screen scaled as required
+    //    //DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Rectangle){ 0, 0, (float)target.texture.width*screenScale, (float)target.texture.height*screenScale }, (Vector2){ 0, 0 }, 0.0f, WHITE);
 
-        // Draw equivalent mouse position on the target render-texture
-        DrawCircleLines(GetMouseX(), GetMouseY(), 10, MAROON);
+    //    // Draw equivalent mouse position on the target render-texture
+    //    DrawCircleLines(GetMouseX(), GetMouseY(), 10, MAROON);
 
-        // TODO: Draw everything that requires to be drawn at this point:
+    //    // TODO: Draw everything that requires to be drawn at this point:
 
-    EndDrawing();
+    //EndDrawing();
     //----------------------------------------------------------------------------------  
 }
